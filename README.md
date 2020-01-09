@@ -2,7 +2,7 @@
 
 Inheritance contracts (agent side and client side) are used to pre-allocate on-chain assets to specified accounts(inheritors). 
 Those inheitors will actually receive the assets when the inheritance conditions met and the transfer actions triggered(or mined) by
-the third partys(miners).
+third parties(the miners).
 
 ## Table of Contents
 
@@ -69,12 +69,12 @@ graph LR;
    - Client downloads and deploys the **client contract**.
    - Client initializes the contract.
    - Client enables the inheritance: enable action is a global switch to enable or disable all the inheritance allocations.
-   - Client allocates assets: sepcifies inheritor account, assets quantity, datetime, cool down duration(heistate period)
+   - Client allocates assets: specifies inheritor account, assets quantity, datetime, cool down duration(heistate period).
      Client provides a action can be used to suspend the specified inheritance individually rather than globally.
 ### 
-3. Client deposit tokens to agent for the inheritance service. Client can withdraw the deposit before inheritance conditions being met.
+3. Client deposits tokens to agent for the inheritance service. Client can withdraw the deposit before inheritance conditions being met.
 ### 
-4. Miner deposit tokens to agent for the promise: charge will be made if the miner uncarefully calls the mining actions frequently.
+4. Miner deposits tokens to agent for the promise: charge will be made if the miner uncarefully calls the mining actions frequently.
 ### 
 5. Miner mines inheritance sepcified by the client: if the mining changes the inheritance state successfully, miner will receive reward.
    - CD(cool down) mining: change inheritance state from active to heistate.
@@ -103,7 +103,7 @@ make
 ```
 
 #### Deploy contracts
-Assume the client account named: **client**, the agent account named: **agent***, the client contract named: **InheritClt**, the agent contract
+Assume the client account named: **client**, the agent account named: **agent**, the client contract named: **InheritClt**, the agent contract
 named: **InheritAgent**
 ```bash
 cleos set contract agent InheritAgent -p agent
@@ -147,28 +147,28 @@ cleos push action client setenable '[true]' -p client
 
 - **to mine**
 
-    Miner can mine client's inheritance by specifying the inheritor account **INHERITOR**, token contract **CONTRACT NAME**, asset amount **ASSET AMOUNT**,      client account **CLIENT** and the miner himself/herself **MINER**. If the miner mines the inheritance successfully, he/she will get the mining reward.
-    If the miner mines 3 times and all failed, he/she will get the fine (used to provent miners from mining frequently and waste resource).
+    Miner can mine client's inheritance by specifying the inheritor account **INHERITOR**, token contract **CONTRACT NAME**, asset amount **ASSET AMOUNT**, client account **CLIENT** and the miner himself/herself **MINER**. If the miner mines the inheritance successfully, he/she will get the mining reward.
+    If the miner mines 3 times and all failed, he/she will get a fine (used to provent miners from mining frequently and waste resource).
 
 ```bash
   cleos push action agent mine '["INHERITOR", "CONTRACT NAME", "ASSET AMOUNT", "CLIENT", "MINER"]' -p MINER
 ```
 
-- **miner claim reward**
+- **miner claims reward**
 
     Miner can call this action to claim the reward plus the desposit
 ```bash
   cleos push action agent minerclaim '["MINER"]' -p MINER
 ```
 
-- **client claim deposit**
+- **client claims deposit**
 
-    Client can claim the previous deposit made for the service. However, if any successful mining happened before calling this action, the service charge        amount will be non-refundable
+    Client can claim the previous deposit made for the service. However, if any successful mining happened before calling this action, the service charge amount will be non-refundable.
 ```bash
   cleos push action agent clientclaim '["CLIENT"]' -p CLIENT
 ```
 
-- **agent claim reward**
+- **agent claims reward**
 
     Agent can claim the reward for the inheritance service
 ```bash
@@ -177,15 +177,15 @@ cleos push action client setenable '[true]' -p client
 
 #### Miner and Client deposit
 
-- **miner depositor**
+- **miner deposit**
 
-    Miner deposit token to agent by transfer with remark "miner"
+    Miner deposits token to agent by transfer with remark "miner"
 ```bash
    cleos transfer MINER agent "TOKEN AMOUNT" "miner" -p MINER
 ```
-- **client depositor**
+- **client deposit**
 
-    Client deposit token to agent by transfer with remark "client"
+    Client deposits token to agent by transfer with remark "client"
 ```bash
    cleos transfer CLIENT agent "TOKEN AMOUNT" "client" -p CLIENT
 ```
@@ -285,7 +285,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 >>>
 
 #### miner and client deposit
-miner can deposit by commenting "miner". client can deposit by commenting "client". transfer to agent token with any other remark will be refunded immediately
+A miner can deposit into (transfer to) agent with comment "miner". A client can deposit with comment "client". Any transfer to agent token with remark other than "miner" or "client" will be refunded immediately.
 ```bash
 cleos transfer miner1 agent "0.1000 SYS" "miner" -p miner1
 ```
@@ -314,7 +314,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```bash
 cleos push action agent mine '["inheritor1", "eosio.token", "10.0000 SYS", "client", "miner1"]' -p miner1
 ```
-if the CD mining condition is met, the following result will be printed out
+If the CD mining condition is met, the following result will be printed out
 >>>
 executed transaction: e1b0f3b5b4217eb306f7cdd80d4589273c0435c86279d2afb0647bd05b6edb69  144 bytes  8266 us<br/>
 \#         agent <= agent::mine                  {"inheritor":"inheritor1","tokencontract":"eosio.token","quantity":"10.0000 SYS","assetclient":"clie...<br/>
@@ -325,7 +325,7 @@ executed transaction: e1b0f3b5b4217eb306f7cdd80d4589273c0435c86279d2afb0647bd05b
 warning: transaction executed locally, but may not be confirmed by the network yet         ] 
 >>>
 
-if the miner mines repeatedly like calling above "mine" action again will receive following result
+If the miner mines repeatedly like calling above "mine" action again will receive following result
 >>>
 executed transaction: fe264b70252fad0194e20cd86f1a1a24a57be05456de4c98feb006e27cf5c5e2  144 bytes  534 us<br/>
 \#         agent <= agent::mine                  {"inheritor":"inheritor1","tokencontract":"eosio.token","quantity":"10.0000 SYS","assetclient":"clie...<br/>
@@ -349,7 +349,7 @@ executed transaction: 9a591c3b9c8ba1a9e4dc6ee08f684e7da42d989def28fa14212da12d3f
 warning: transaction executed locally, but may not be confirmed by the network yet         ] 
 >>>
 
-- Note: for every inheritance allocation record being served, the client need to pay the service respectivelly. The client can deposit enough tokens for all the allocations to process or do that separately as long as the mining conditions unmet and no mining occurs. Otherwise error message will be presented
+- Note: for every inheritance allocation record being served, the client need to pay the service respectivelly. The client can deposit enough tokens for all the allocations to process or do that separately as long as the mining conditions unmet and no mining occurs. Otherwise error message will be presented during the mining process which cause the inheritance service stopped.
 
 #### claim
 call the following action will claim the assets including previous deposit and mining reward
